@@ -84,6 +84,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:site_name", content: "COMORR" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "COMORR — Comfort, Refined." },
+      { name: "twitter:description", content: "Premium men's underwear engineered for everyday comfort, movement, and confidence." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/c8b519d5-8f07-46a1-ad28-71f7ed922e72/id-preview-4fe466ef--4d6fbf8c-ced0-42c0-9513-fa512751f0f8.lovable.app-1781067417633.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/c8b519d5-8f07-46a1-ad28-71f7ed922e72/id-preview-4fe466ef--4d6fbf8c-ced0-42c0-9513-fa512751f0f8.lovable.app-1781067417633.png" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
