@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { ShoppingBag, Menu, Search, User } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 
 export function Nav({ onCartOpen }: { onCartOpen: () => void }) {
   const [scrolled, setScrolled] = useState(false);
@@ -38,9 +39,9 @@ export function Nav({ onCartOpen }: { onCartOpen: () => void }) {
           <button className="p-2 hover:opacity-60 transition" aria-label="Search">
             <Search className="h-[18px] w-[18px]" />
           </button>
-          <button className="p-2 hover:opacity-60 transition hidden sm:inline-flex" aria-label="Account">
+          <Link to="/auth" className="p-2 hover:opacity-60 transition hidden sm:inline-flex" aria-label="Account">
             <User className="h-[18px] w-[18px]" />
-          </button>
+          </Link>
           <button
             onClick={onCartOpen}
             className="p-2 hover:opacity-60 transition relative"
