@@ -1,11 +1,23 @@
 import { X } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 export function Cart({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const [paymentsEnabled, setPaymentsEnabled] = useState(false);
+
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
   }, [open]);
+
+  useEffect(() => {
+    supabase
+      .from("site_settings")
+      .select("payments_enabled")
+      .eq("id", true)
+      .maybeSingle()
+      .then(({ data }) => setPaymentsEnabled(!!data?.payments_enabled));
+  }, []);
 
   return (
     <>
@@ -34,10 +46,16 @@ export function Cart({ open, onClose }: { open: boolean; onClose: () => void }) 
               Start with an Essential Boxer Brief or save with a 3-Pack.
             </p>
             <button onClick={onClose} className="btn-primary mt-4">Continue Shopping</button>
+            {paymentsEnabled && (
+              <button className="mt-2 text-xs uppercase tracking-[0.22em] underline underline-offset-4">
+                Proceed to Checkout
+              </button>
+            )}
           </div>
           <div className="border-t border-border p-6 text-xs text-muted-foreground space-y-1">
             <p>Free shipping on orders over $60.</p>
             <p>30-day comfort guarantee.</p>
+            {!paymentsEnabled && <p className="pt-2">Checkout coming soon.</p>}
           </div>
         </div>
       </aside>
