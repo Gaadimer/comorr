@@ -34,7 +34,7 @@ function AdminPage() {
   const navigate = useNavigate();
   const [authed, setAuthed] = useState<boolean | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [tab, setTab] = useState<"products" | "orders">("products");
+  const [tab, setTab] = useState<"products" | "orders" | "payments">("products");
 
   useEffect(() => {
     (async () => {
@@ -83,6 +83,12 @@ function AdminPage() {
               className={tab === "orders" ? "text-foreground" : "text-muted-foreground"}
             >
               Orders
+            </button>
+            <button
+              onClick={() => setTab("payments")}
+              className={tab === "payments" ? "text-foreground" : "text-muted-foreground"}
+            >
+              Payments
             </button>
             <button onClick={signOut} className="text-muted-foreground hover:text-foreground">
               Sign out
