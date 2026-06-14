@@ -92,6 +92,30 @@ export type Database = {
         }
         Relationships: []
       }
+      site_settings: {
+        Row: {
+          id: boolean
+          payment_provider: string | null
+          payments_enabled: boolean
+          publishable_key: string | null
+          updated_at: string
+        }
+        Insert: {
+          id?: boolean
+          payment_provider?: string | null
+          payments_enabled?: boolean
+          publishable_key?: string | null
+          updated_at?: string
+        }
+        Update: {
+          id?: boolean
+          payment_provider?: string | null
+          payments_enabled?: boolean
+          publishable_key?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
