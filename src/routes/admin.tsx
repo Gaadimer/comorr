@@ -220,13 +220,13 @@ function OrdersPanel() {
   async function load() {
     setLoading(true);
     const { data } = await supabase.from("orders").select("*").order("created_at", { ascending: false });
-    setOrders((data as Order[]) ?? []);
+    setOrders((data as unknown as Order[]) ?? []);
     setLoading(false);
   }
   useEffect(() => { load(); }, []);
 
   async function setStatus(id: string, status: string) {
-    await supabase.from("orders").update({ status }).eq("id", id);
+    await supabase.from("orders").update({ status: status as Order["status"] }).eq("id", id);
     load();
   }
 
