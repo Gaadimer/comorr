@@ -226,7 +226,8 @@ function OrdersPanel() {
   useEffect(() => { load(); }, []);
 
   async function setStatus(id: string, status: string) {
-    await supabase.from("orders").update({ status: status as Order["status"] }).eq("id", id);
+    // @ts-expect-error enum literal
+    await supabase.from("orders").update({ status }).eq("id", id);
     load();
   }
 
