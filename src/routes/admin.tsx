@@ -97,7 +97,9 @@ function AdminPage() {
         </div>
       </header>
       <main className="max-w-6xl mx-auto px-6 py-10">
-        {tab === "products" ? <ProductsPanel /> : <OrdersPanel />}
+        {tab === "products" && <ProductsPanel />}
+        {tab === "orders" && <OrdersPanel />}
+        {tab === "payments" && <PaymentsPanel />}
       </main>
     </div>
   );
