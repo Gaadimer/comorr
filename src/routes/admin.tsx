@@ -34,7 +34,7 @@ function AdminPage() {
   const navigate = useNavigate();
   const [authed, setAuthed] = useState<boolean | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [tab, setTab] = useState<"products" | "orders">("products");
+  const [tab, setTab] = useState<"products" | "orders" | "payments">("products");
 
   useEffect(() => {
     (async () => {
@@ -84,6 +84,12 @@ function AdminPage() {
             >
               Orders
             </button>
+            <button
+              onClick={() => setTab("payments")}
+              className={tab === "payments" ? "text-foreground" : "text-muted-foreground"}
+            >
+              Payments
+            </button>
             <button onClick={signOut} className="text-muted-foreground hover:text-foreground">
               Sign out
             </button>
@@ -91,7 +97,9 @@ function AdminPage() {
         </div>
       </header>
       <main className="max-w-6xl mx-auto px-6 py-10">
-        {tab === "products" ? <ProductsPanel /> : <OrdersPanel />}
+        {tab === "products" && <ProductsPanel />}
+        {tab === "orders" && <OrdersPanel />}
+        {tab === "payments" && <PaymentsPanel />}
       </main>
     </div>
   );
@@ -274,6 +282,120 @@ function OrdersPanel() {
           ))}
         </div>
       )}
+    </div>
+  );
+}
+
+type Settings = {
+  payments_enabled: boolean;
+  payment_provider: string | null;
+  publishable_key: string | null;
+};
+
+function PaymentsPanel() {
+  const [s, setS] = useState<Settings | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [msg, setMsg] = useState<string | null>(null);
+
+  async function load() {
+    const { data } = await supabase.from("site_settings").select("*").eq("id", true).maybeSingle();
+    setS(
+      data
+        ? { payments_enabled: data.payments_enabled, payment_provider: data.payment_provider, publishable_key: data.publishable_key }
+        : { payments_enabled: false, payment_provider: null, publishable_key: null },
+    );
+  }
+  useEffect(() => { load(); }, []);
+
+  async function save() {
+    if (!s) return;
+    setSaving(true);
+    setMsg(null);
+    const { error } = await supabase
+      .from("site_settings")
+      .update({
+        payments_enabled: s.payments_enabled,
+        payment_provider: s.payment_provider,
+        publishable_key: s.publishable_key,
+      })
+      .eq("id", true);
+    setSaving(false);
+    setMsg(error ? error.message : "Saved.");
+  }
+
+  if (!s) return <p className="text-sm text-muted-foreground">Loading…</p>;
+
+  const connected = s.payments_enabled && s.payment_provider;
+
+  return (
+    <div className="max-w-xl">
+      <h1 className="text-2xl font-medium mb-2">Payments</h1>
+      <p className="text-sm text-muted-foreground mb-8">
+        Connect a payment provider. The Checkout button on the storefront appears only once payments are enabled.
+      </p>
+
+      <div className="mb-8 border border-border p-5">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-xs uppercase tracking-wider text-muted-foreground">Status</p>
+            <p className="mt-1 text-sm font-medium">
+              {connected ? `Connected · ${s.payment_provider}` : "Not connected"}
+            </p>
+          </div>
+          <span
+            className={`h-2.5 w-2.5 rounded-full ${connected ? "bg-emerald-500" : "bg-muted-foreground/40"}`}
+          />
+        </div>
+      </div>
+
+      <div className="space-y-5">
+        <div>
+          <label className="text-xs uppercase tracking-wider text-muted-foreground">Provider</label>
+          <select
+            value={s.payment_provider ?? ""}
+            onChange={(e) => setS({ ...s, payment_provider: e.target.value || null })}
+            className="mt-1 w-full border border-border bg-background px-3 py-2.5 text-sm outline-none focus:border-foreground"
+          >
+            <option value="">— Select —</option>
+            <option value="stripe">Stripe</option>
+            <option value="paddle">Paddle</option>
+            <option value="shopify">Shopify</option>
+          </select>
+        </div>
+
+        <div>
+          <label className="text-xs uppercase tracking-wider text-muted-foreground">Publishable key</label>
+          <input
+            value={s.publishable_key ?? ""}
+            onChange={(e) => setS({ ...s, publishable_key: e.target.value })}
+            placeholder="pk_live_…"
+            className="mt-1 w-full border border-border bg-background px-3 py-2.5 text-sm outline-none focus:border-foreground"
+          />
+          <p className="mt-1 text-xs text-muted-foreground">
+            Secret keys are stored separately as backend secrets, never here.
+          </p>
+        </div>
+
+        <label className="flex items-center gap-3 pt-2">
+          <input
+            type="checkbox"
+            checked={s.payments_enabled}
+            onChange={(e) => setS({ ...s, payments_enabled: e.target.checked })}
+          />
+          <span className="text-sm">Enable payments on the storefront</span>
+        </label>
+
+        <div className="flex items-center gap-4 pt-2">
+          <button
+            onClick={save}
+            disabled={saving}
+            className="bg-foreground text-background px-5 py-2.5 text-sm tracking-wide disabled:opacity-50"
+          >
+            {saving ? "Saving…" : "Save"}
+          </button>
+          {msg && <p className="text-sm text-muted-foreground">{msg}</p>}
+        </div>
+      </div>
     </div>
   );
 }
